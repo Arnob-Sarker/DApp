@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Email Verification</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h2>Email Verification</h2>
+    
+    <!-- Wallet Connection -->
+    <div id="walletConnection">
+      <button id="connectWalletBtn">Connect Wallet</button>
+      <p id="accountAddress">Connecting to MetaMask...</p>
+      <p id="verificationStatus">Status: Loading...</p>
+    </div>
+
+    <!-- Step 3: Email Verification Form -->
+    <div id="verificationForm" class="verification-form" style="display: none;">
+      <h3>Step 3: Email Verification</h3>
+      <p>Please check your email and enter the verification code below:</p>
+      
+      <form onsubmit="App.verifyEmail(); return false;">
+        <input type="text" id="verification_code" placeholder="Enter verification code" required />
+        <button type="submit">Verify Email</button>
+      </form>
+      
+      <div class="button-group">
+        <button onclick="App.resendVerificationCode()" style="background-color: #6c757d;">
+          Resend Verification Code
+        </button>
+        <button onclick="window.location.href='index.html'" style="background-color: #28a745;">
+          Back to Home
+        </button>
+      </div>
+    </div>
+
+    <!-- Email Verified Success Message -->
+    <div id="emailVerifiedSuccess" class="success-message" style="display: none;">
+      <h3>✓ Email Verified Successfully!</h3>
+      <p>Your email has been verified and your data has been stored on the blockchain. You can now proceed to complete your registration.</p>
+      <div class="button-group">
+        <button onclick="window.location.href='login.html'" style="background-color: #28a745;">
+          Proceed to Login
+        </button>
+        <button onclick="window.location.href='index.html'" style="background-color: #6c757d; margin-left: 10px;">
+          Back to Home
+        </button>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="error-message" style="display: none;">
+      <h3>✗ Verification Failed</h3>
+      <p id="errorText">An error occurred during verification.</p>
+      <div class="button-group">
+        <button onclick="window.location.href='index.html'" style="background-color: #dc3545;">
+          Back to Home
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@4.5.0/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/truffle-contract@4.0.31/dist/truffle-contract.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html> 

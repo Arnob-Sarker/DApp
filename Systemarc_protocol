@@ -1,0 +1,427 @@
+YOU HAVE TO REMEMBER EVERYTHING FROM THIS CHAT TILL THE END. This is my whole system architecture and my protocol flow.. I want to build the whole sytem ... So i am providing you all.. I have also buildt the few of it.. 4.3 System Architecture
+Before diving into the system architecture, we need to discuss some of the assumptions that we have taken into account to successfully deploy the proposed aggregated
+ride-sharing platform.
+Assumption 1: To enable secure access to user accounts, all the ride-sharing
+service providers (SPs) need to support standardized OAuth-based APIs.
+Assumption 2: Since registration is accomplished via smart contract deployed
+on the Ethereum blockchain, users must have an Ethereum-compatible Web3 wallet
+(e.g. MetaMask) to register on the platform.
+20
+Assumption 3: Each SP is equipped with a DP Engine which converts sensitive
+location or ride-related data into differentially private outputs before sending to the
+aggregated platform.
+Assumption 4: The application can only be deployed if user data portability,
+digital consent, and ride-sharing interoperability are aligned with the law of the
+government of the territory.
+Our proposed system, illustrated in Figure 4.2, is a web-based aggregated platform
+which uses blockchain and differential privacy to ensure secure management. The
+architecture consists of four main components which are User ( 4.3.1), Ride-Sharing
+Service Providers (SP) ( 4.3.2), Aggregated Platform ( 4.3.3), and Blockchain ( 4.3.4).
+The users who have a digital wallet can register on the platform, view aggregated
+fare and traffic data from multiple SPs, and initiate ride bookings to the desired
+SP seamlessly. The aggregated platform utilizes a database for session and token
+management but user information along with the consent flags are stored on the
+blockchain via smart contract. Each SP consists of a DP Engine which transforms
+the sensitive data to differentially private outputs before sharing with the aggregated
+platform.
+Figure 4.2: System Architecture
+4.3.1 User
+In the proposed system, a user is an individual looking to compare ride options
+among different SPs and book transportation from suitable SP via a single platform. At first an user needs to connect his Ethereum wallet and submit a registra21
+tion form after accessing the Aggregated Platform. Registration includes an email
+verification process and permission-granting process. In the email verification step,
+DApp backend sends a confirmation link to user email and user needs to verify and
+the permission-granting step the user selectively enables access for individual SPs.
+Hash of the user’s information and permission flags are stored on-chain for transparency. Once registered and authorized, the user can query ride availability for a
+selected location.The user then can proceed to booking from preferred SP, which
+involves redirection to the respective SP’s booking interface using a secure session.
+4.3.2 Service Providers (SP)
+Service Providers (SPs) are third-party platforms (e.g., Uber, Pathao in the context
+of Bangladesh) that offer ride-booking services. Each SP must support OAuth 2.0
+protocols for secure token exchange and an integrated Differential Privacy Engine
+for privacy preserving data transfer. We specifically chose Geo-Indistinguishability,
+a Local Differential Privacy (LDP) because our application deals with geographic
+co-ordinates in real time. After receiving requests from the aggregator’s backend,
+the SP routes internal data (except fare) through its DP engine, which applies controlled noise to sanitize the data. The privatized output includes approximate fare,
+estimation of current ride requests near a particular place, and available car count
+near that location etc. The data is returned to the aggregated platform along with
+a unique provider session identifier.
+During the booking process, the SP receives a request from the aggregator backend
+containing the access token, provider session ID and a locked fare. After that, the
+SP replies with a booking URL, which is then used to redirect users to the booking
+interface of SP.
+4.3.3 Aggregated Platform
+The Aggregated platform (DApp) functions as a middleware that coordinates communication between the blockchain, service providers, and users. DApp plays a
+crucial role in establishing a trust anchor between the user’s digital identity (wallet
+address) and their real-world identity (email address) by email verification during
+registration via confirmation link sent to the user’s email. Upon successful verification, a hashed version of the email is stored on-chain in the user’s registration
+record transaction. This linkage guarantees a trustworthy association between verifiable user identities and pseudonymous blockchain identities which is essential for
+enforcing accountability and enabling future audits.
+Additionally, OAuth flow is also supported by the DApp. Its backend manages token exchange and safely stores encrypted access token, refresh token, and expiry
+metadata in the token database which is later used in booking and SP data queries.
+DApp also supports permission revocation by the user at any point to ensure user
+control over consent via smart contract.
+When a user queries for traffic data retrieval from a specific location, the backend
+of the DApp initiates a session by generating a unique session ID tied to the user’s
+22
+wallet address and geolocation. Then it contacts and receives private data, fare
+approximation, provider’s session ID from each of the SPs. Upon receiving the
+response of all SPs, the DApp aggregates the data to show the combined result
+to the user. Moreover, to validate and manage the session during the booking
+phase, it stores the mapping of the session id of the DApp and the SPs in the
+session database. This mapping is essential for providing user persistent data while
+searching and booking for a seamless user experience.
+4.3.4 Blockchain
+The system utilizes Ethereum based public blockchain system which supports smart
+contracts and wallet-based authentication via standard Web3 interfaces. It serves
+as a decentralized trust layer by ensuring transparent, secure, and auditable coordination among entities without relying on centralized intermediaries.
+Smart contracts play a key role in user registration, authorization, and permission
+management To guarantee that only the user has control over their account, all
+registration and authorization procedures are carried out as transactions that are
+signed by the user’s wallet. Every permission that is granted or revoked, every registration, and every crucial interaction are recorded and stored immutably via Smart
+contracts. These timestamped and cryptographically protected logs guarantee auditable transparency throughout the system.
+On-chain raw or sensitive data storage can potentially violate privacy and storing
+large and dynamic data can be inefficient and costly. Therefore, such data is maintained off-chain and the blockchain only stores essential metadata, user identification
+hash, and consents. This hybrid architecture ensures data integrity, auditability, and
+scalability while complying with privacy regulations.
+4.4 Protocol Flow
+In our system, we proposed using a public blockchain to manage user registration and permission transparency. Here, any user can interact with the system by
+connecting a blockchain wallet. However, service access is controlled through verified permissions, smart contracts, and authenticated service provider tokens. This
+section outlines the protocol flow of the various components of our system. Before
+describing the flows, we introduce the relevant notations (Table 4.1) and data model
+(Table 4.2).
+4.4.1 Data Model
+All user interactions within the system are represented as structured requests, which
+is denoted by req. It consists of two components which are a type and data. Type
+is indicating the category of operation and associated data relevant to the request.
+Formally, this is defined as:
+req := htype, datai, type ∈ TYPE, data ∈ DATA
+23
+Table 4.1: Cryptographic and other Notations
+Notation Meaning
+u User
+D Aggregator DApp (Frontend + Backend)
+SC Smart Contract
+BCH Blockchain ledger
+SP Service Provider
+DB Database
+Ke Public key of entity e
+K−1
+e Private key of entity e
+{x}K Encryption of x under public key K
+{x}K−1 Signature of x under private key K−1
+H(x) SHA-256 hash of x
+[ . . . ]https HTTPS-encrypted payload
+Nk Fresh nonce k
+req(type, data) Request tuple htype, datai
+resp Response tuple hresponsereq, returnedDatai
+registerData hwalletAddr, nameHash, emailHashi
+permissionData hwalletAddr, SP, true/f alsei
+loginData hwalletAddr, MaphSP, haccess, refreshiii
+placeQuery hlat, lng, walletAddr, MaphSP, access_tokenii
+bookingRequest hagg_session_id, provider, walletAddr,
+provider_session_id, access_tokeni
+revokeRequest hwalletAddr, SPi
+tokenRecord hwalletAddr, SP, access, refresh, expiryi
+KDB Encryption key for the DB (symmetric or public key)
+{tokenRecord}KDB Encrypted token record under key KDB
+aggregatedResult ListhSP, f are, location_datai
+bookingConf irmation hbooking_urli
+∅ Empty/null
+The system generates an associated response tuple by processing each request.
+resp := hresponsereq, returnedDatai
+Here, responsereq refers to the outcome of the operation such as success or failure, and returnedData consists of additional data returned to the user if necessary.
+Operations that do not require extra data, returnedData is empty (∅) there.
+The defined TYPE set contains six distinct categories of user interactions which are
+registration, login, permissionGrant, aggQuery, bookRide, and
+revokePermission. All type maps to a structured input specified within the DATA
+set.
+For registration, users provide identifiers which are hashed such as nameHash,
+emailHash, their blockchain wallet address denoted as walletAddr . After verification,
+the system generates a cryptographic certificate which contains the user’s public key
+(Ku), and signed by an administrator’s private key (K−1
+ad ) so that it securely bind
+the user’s identity to their blockchain credentials.
+certificatehKu, {H(walletAddr , Ku)}K
+−1
+ad
+i
+24
+Table 4.2: Data Model
+req := htype, datai
+resp := hresponsereq, returnedDatai
+TYPE := hregistration, login, permissionGrant, aggQuery, bookRide, revokePermissioni
+DATA := hregisterData, loginData, permissionData, placeQuery, bookingRequest, revokeRequesti
+registerData := hwalletAddr, nameHash, emailHashi
+certif icate := hKu, {H(walletAddr, Ku)}K−1
+ad
+i
+loginData := hwalletAddr, tokens : MaphSP, haccess_token, refresh_tokeniii
+permissionData := hwalletAddr, provider, permissioni
+placeQuery := hlat, lng, radius, walletAddr, tokens : MaphSP, access_tokenii
+aggregatedResult := ListhSP, f are, , lat0
+, lng0
+i
+bookingRequest := hagg_session_id, provider, walletAddr, provider_session_id, access_tokeni
+bookingConf irmation := hbooking_urli
+revokeRequest := hwalletAddr, SPi
+In the login interaction, users authenticate themselves using previously issued OAuth
+tokens which are associated with their wallets and authorized Service Providers
+(SPs). If OAuth tokens are expired, the system refreshes them securely. Then,
+within the response payload, updated tokens are provided back to the user.
+The permission management operation, which is denoted as permissionGrant in
+the TYPE set, combines blockchain-managed permissions along with OAuth authorization flows. Users submit permission requests denoted as permissionData,
+to grant or revoke data access on-chain, as well as completing OAuth authorization. OAuth tokens are encrypted here using a designated encryption key KDB.
+Then, those are securely stored off-chain within the encrypted DB, represented as
+{tokenRecord}KDB .
+The type = aggQuery is aggregated queries, where users initiate location-based traffic
+insight retrieval and fare requests denoted as placeQuery across multiple service
+providers. Each provider returns fare data along with location data after applying
+differential privacy mechanisms, represented as (, lat0
+, lng0
+). The aggregated result
+denoted as aggregatedResult allows secure and privacy-preserving traffic insights
+and fare comparisons.
+aggregatedResultListhSP, f are, , lat0
+, lng0
+i
+The booking transaction referred by type = bookRide, allows users to confirm bookings with selected providers. It is done by using previously established session details
+and fares denoted as bookingRequest. Providers return booking confirmations which
+include booking URLs as bookingConfirmation.
+Lastly, users can initiate permission revocations which is referred by
+type = revokePermission. It happens through structured revocation requests denoted as revokeRequest, which triggers the process of deletion of OAuth tokens from
+the encrypted DB. The on-chain permissions also get updated. This process ensures
+consent management and data security.
+This structured data model, using blockchain immutability, cryptographic technics,
+differential privacy, and OAuth integrations, ensures secure, transparent, and verifiable interactions within the system. Therefore, it is capable of maintaining user
+trust and privacy throughout all the operations.
+25
+4.4.2 Algorithm
+The algorithms for our decentralized ride sharing system are presented as Algorithm 1 and Algorithm 2. The key system functions in Algorithm 1 includes walletbased registration and login, and Algorithm 2 includes aggregated session queries,
+ride booking, and permission management.
+4.4.3 Protocol Flow
+This section describes the protocol flow, illustrating user interactions in the system
+which are decentralized user registration, login, permission management, data aggregation by applying differential privacy, and booking functionalities. Each protocol
+is accompanied by tables and figures which clearly specifies message exchanges and
+cryptographic notations.
+Registration Protocol
+To be a part of the system, users need to complete a blockchain-based registration
+process along with permission granting. The registration and permission-granting
+flow is detailed in Table 4.3 and visualized in Figure 4.3. Each registration request
+is represented as:
+req = htype, datai, type = registration, data = registerData
+which contains the user’s blockchain wallet address and hashed personal information.
+Table 4.3: Registration & Permission‐Granting Protocol
+Msg Flow Description
+M1 u → D [N1, req(registration, registerData)]https
+M1a D → u [N1, emailVerificationLink(code)]smtp
+M1b u → D [N1, verifyEmail(code)]https
+M2 D → SC N2, req(registration, registerData)
+M3 SC → BCH N3, registerData
+M4 BCH → SC N3, TRUE
+M5 SC → D N2, resp = hUserRegistered, ∅i
+M6 u → D [N4, req(permissionGrant,permissionData)]https
+M7 D → SC N5, req(permissionGrant,permissionData)
+M8 SC → BCH N6, permissionData
+M9 BCH → SC N6, TRUE
+M10 SC → D N5, ack = hPermission Granted, ∅i
+M11 D → SPn N7, redirect to /auth?wallet={walletAddr}&provider={SPn}
+M12 SPn → D N7, auth_code
+M13 D → SPn N8, exchange(auth_code→access,refresh)
+M14 SPn → D N8, {access, refresh, expiry}
+M15 D → DB N8, {tokenRecord}KDB
+M16 D → u [N1, resp = hRegistration Successful, ∅i, {H(resp)}K
+−1
+D
+]https
+26
+Figure 4.3: Registration Flow
+• Step 1: A user initiates registration by connecting their blockchain wallet
+via the frontend interface. The application prompts the user to cryptographically sign a predefined message as proof of wallet ownership (message M1 in
+Table 4.3).
+• Step 2: After successful wallet verification, the frontend collects user data,
+hashes sensitive fields such as name and email, producing nameHash and
+emailHash, and sends a verification link or code to the entered email address
+(message M1a).
+• Step 3: After receiving the verification link or code, the user confirms their
+email via the frontend (message M1b). After this verification step, the system
+proceed to submit the registration request (message M2) to the smart contract:
+req(registration, registerData) = hwalletAddr, nameHash, emailHashi
+• Step 4: The smart contract, upon receiving this request, executes the
+registerUser function. It records the user’s walletAddr, and associated
+hashes on the blockchain ledger and emits a UserRegistered event upon
+success (messages M3 and M4).
+• Step 5: The smart contract notifies the DApp frontend that user registration
+on-chain was successful and the UI gets updated accordingly (message M5).
+resp = hUserRegistered, ∅i
+After the initial wallet-based registration, users authorize specific Service Providers
+(SPs) to access their data. It is done through a hybrid on-chain and OAuth authorization mechanism:
+27
+• Step 6: For each selected Service Provider, the user initiates a permissiongranting request from the frontend. This request is sent on-chain (messages
+M6 and M7).
+req(permissionGrant, permissionData) = hwalletAddr, SP, truei
+• Step 7: The smart contract records the permission grant and updates the
+blockchain state accordingly. It emits a PermissionSet event (messages M8
+and M9).
+• Step 8: After successful on-chain permission setting, the smart contract confirms to the frontend via an acknowledgment (message M10).
+ack = hPermission Granted, ∅i
+• Step 9: Concurrently, the frontend initiates an OAuth authorization flow
+(message M11), redirecting the user to:
+/auth?wallet={walletAddr}&provider={SP}
+• Step 10: The OAuth server returns an auth_code upon successful user login
+and consent (message M12). The backend exchanges this auth_code for OAuth
+tokens, including access_token, refresh_token, and token expiry details
+(messages M13 and M14).
+• Step 11: The backend securely encrypts and stores the OAuth tokens as
+tokenRecord off-chain within the DB (message M15).
+{tokenRecord}KDB
+Finally, after completion of registration and permission setup, the frontend delivers
+an registration success confirmation to the user (message M16).
+resp = hRegistration Successful, ∅i
+Login Protocol
+The system consists of decentralized wallet-based login protocol combined with
+OAuth token validation which is shown in Table 4.4 and Figure 4.4.
+• Step 1: Users initiate login by connecting their blockchain wallet via the
+frontend. The frontend sends a login request to verify registration status
+(messages M1, M2).
+req(login,loginData) = hwalletAddr, tokensi
+• Step 2: After registration confirmation, the frontend validates OAuth tokens
+for each SP :
+28
+Table 4.4: Login Protocol
+Msg Flow Description
+M1 u → D [N1, req(login,loginData)]https
+M2 D → SC N2, req(login,loginData)
+M3 SC → D N2, TRUE
+M4 D → SP SPn: validate or refresh tokens
+M5 SP → D Return valid or new tokens
+M6 D → DB Update tokenRecord
+M7 D → u [N1, resp = hLoginSuccess, updatedT okensi, {H(resp)}K
+−1
+D
+]https
+Figure 4.4: Login Flow
+1. Valid tokens require no further action.
+2. Expired tokens trigger a refresh operation: refreshToken→�new_access,
+new_refresh� (messages M3–M5).
+• Step 3: Updated tokens are securely stored in the DB for future interactions
+(message M6).
+tokenRecord := hwalletAddr , SP, access_token, refresh_token, expiryi
+• Step 4: After token validation and refresh, the system constructs a login
+response: resp = h”LoginSuccess”, returnedDatai (message M7).
+Permission Revocation Protocol
+Users can revoke previously granted permissions to SPs, which ensures consent management and user privacy, outlined in Table 4.5 and Figure 4.5.
+29
+Table 4.5: Permission Revocation Protocol
+Msg Flow Description
+M1 u → D [N1, req(revokePermission,revokeRequest)]https
+M2 D → SPn N2, revokeTokenAPI(access_token)
+M3 D → DB N2, removeTokens(walletAddr,SP)
+M4 D → SC N3, req(permissionGrant,�walletAddr,SP,false�)
+M5 SC → BCH N3, TRUE
+M6 SC → D N3, resp = hPermission Revoked, ∅i
+M7 D → u [N1, resp, {H(resp)}K
+−1
+D
+]https
+Figure 4.5: Optional Permission Revocation Flow
+• Step 1: Users initiate revocation by selecting an SP via the frontend and triggering a revocation request, req(revokePermission,revokeRequest) (message M1).
+• Step 2: The backend invalidates the SP’s OAuth access token,
+revokeTokenAPI(access_token) and deletes the associated token record
+from the DB (messages M2, M3). This ensures that the SP can no longer
+issue API calls using the previously granted token.
+• Step 3: The backend updates the on-chain permission state by invoking the
+smart contract function, setPermission(walletAddr,SP,false), emiting a
+PermissionRevoked event if successful (messages M4, M5).
+• Step 4: Finally, the backend returns the revocation confirmation,
+h”Permission Revoked”, ∅i, updating the UI accordingly (messages M6, M7).
+Traffic Insight Retrieval Protocol
+This protocol describes how a user initiates a fare query across multiple Service
+Providers (SPs), incorporating differential privacy (DP) to preserve location privacy.
+The process is presented in Table 4.6 and Figure 4.6.
+• Step 1: The user submits a aggregated query to the DApp backend by providing the query payload:
+placeQuery = hlat, lng, radius, walletAddr , tokensi
+30
+Table 4.6: Traffic Insight Retrieval Protocol
+Msg Flow Description
+M1 u → D(Frontend) [N1, req(aggQuery, placeQuery)]https
+M2 D(Frontend) → D(Backend) N2, req(aggQuery, placeQuery)
+M3 D(Backend) → DB N2, storeSessionData(aggregatorSession)
+M4 D(Backend) → SPn N3n, query(lat, lng, token_n)
+M5 SPn → D(Backend) N3n, hsession_id_n, f aren, DP-applied location_datani;
+SP applies differential privacy (DP) to (lat, lng):
+location_datan = hε, lat0
+n
+, lng0
+n
+i
+M6 D(Backend) → DB N3, storeSessionMapping(providerSessionMapping)
+M7 D(Backend) → D(Frontend) N2, resp = hAggregationComplete, aggregatedResulti
+M8 D(Frontend) → u [N1, resp, {H(resp)}K−1
+D
+]https
+Figure 4.6: Traffic Insight Retrieval
+Then, the backend generates a unique aggregator session ID and stores relevant
+session context in session DB:
+aggregatorSession := hagg_session_id, walletAddr , lat, lng, created_ati
+(Messages M1, M2, M3).
+• Step 2: The backend forwards the user query to each authorized SP using
+valid access tokens. Each SP authenticates the request and responds with:
+– provider_session_id: A session identifier from the SP’s system.
+– fare: The computed fare based on the queried location.
+– location_data := hε, lat0
+, lng0
+i: A DP-enhanced location derived using
+differential privacy with privacy budget ε.
+(Messages M4, M5).
+• Step 3: The aggregator stores all provider responses using a session mapping
+in session DB:
+providerSessionMapping := hagg_session_id, session_map : MaphSP,
+provider_session_idii
+This enables continuity for future operations like booking, auditing, or dispute
+resolution. (Messages M6)
+31
+• Step 4: The backend aggregates all SP responses and compiles them into a
+unified response structure:
+aggregatedResult := ListhSP, fare, location_datai
+which is securely delivered to the frontend as:
+resp = h“Aggregation Complete”, aggregatedResulti (Messages M7, M8)
+• Step 5: The user interface renders the result resp, allowing the user to
+compare offers across SPs while ensuring that precise location information
+is privacy-preserved.
+Booking Protocol
+The booking protocol secures interactions between the Aggregator App and SPs,
+maintaining fare integrity and authenticated access via OAuth showing in Table 4.7
+and Figure 4.7.
+Table 4.7: Booking Protocol
+Msg Flow Description
+M1 u → D(F rontend) [N1, req(bookRide,bookingRequest)]https
+M2 D(F rontend) → D(Backend) N2, req(bookRide,bookingRequest)
+M3 D(Backend) → DB N3, checkLockedFare(agg_session_id, walletAddr,
+provider_session_id)
+M4 DB → D(Backend) N3, locked_fare
+M5 D(Backend) → SP N4, hprovider_session_id, f are, tokeni
+M6 SP → D(Backend) N4, hbooking_urli
+M7 D(Backend) → D(F rontend) N2, resp = hBooking Initiated, bookingConf irmationi
+M8 D(F rontend) → u [N1, resp, {H(resp)}K−1
+D
+]https
+Figure 4.7: Booking Flow
+32
+• Step 1: After selecting an SP from aggregated results, the user
+triggers a booking request, req(bookRide,bookingRequest) =
+hagg_session_id, provider, walletAddr, provider_session_id, access_tokeni
+which is sent securely to the backend (messages M1, M2).
+• Step 2: The backend validates the aggregatorSession corresponding to
+aggregator_session_id and retrieves locked_fare session DB. It performs
+the following validations:
+walletAddr matches session,
+provider_session_id is consistent with the recorded session_map,
+and locked_fare exists in the locked_fares map for the selected SP.
+This ensures booking consistency and prevents fare tampering (messages
+M3, M4).
+• Step 3: Upon successful validation, the backend sends a secure booking payload hprovider_session_id, locked_fare, access_tokeni to the SP (message M5);
+The SP returns a booking confirmation hbooking_urli (message M6).
+• Step 4: The backend sends the SP confirmation into a response
+h”Booking Initiated”, bookingConfirmationito frontend. The user is then
+redirected to complete the booking (messages M7, M8)

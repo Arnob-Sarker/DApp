@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy-Preserving Ride Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+      background: #f5f5f5;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 1200px;
+      margin: 0 auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 0.5rem;
+    }
+
+    #map-container {
+      flex: 1;
+      position: relative;
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
+    #controls {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      width: 200px;
+    }
+
+    #controls strong {
+      display: block;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    #radiusInput {
+      width: 60px;
+      padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    #status {
+      font-size: 0.85rem;
+      color: #666;
+      padding-top: 5px;
+      border-top: 1px solid #eee;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        max-width: 100%;
+      }
+
+      #controls {
+        width: auto;
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Privacy-Preserving Ride Map</h1>
+      <div class="subtitle">Explore ride request near you</div>
+    </header>
+
+    <div id="map-container">
+      <div id="controls">
+        <strong>Click map to search</strong>
+        Radius (km):
+        <input type="number" id="radiusInput" value="1" min="0.1" step="0.1">
+        <div id="status"></div>
+      </div>
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([23.8103, 90.4125], 13);
+    map.zoomControl.setPosition('topright');
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+    }).addTo(map);
+
+    const markers = L.layerGroup().addTo(map);
+    const statusEl = document.getElementById('status');
+
+    const rideIcon = L.icon({
+      iconUrl: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32]
+    });
+
+    const currentLocationIcon = L.icon({
+      iconUrl: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32]
+    });
+
+    async function fetchNearbyPoints(lat, lon, radius) {
+      statusEl.textContent = 'Loading...';
+      markers.clearLayers();
+
+      try {
+        const response = await fetch('/api/nearby', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lat, lon, radius })
+        });
+
+        if (!response.ok) throw new Error('API request failed');
+
+        const data = await response.json();
+
+        if (data.results.length === 0) {
+          statusEl.textContent = 'No results found';
+          return;
+        }
+
+        data.results.forEach(point => {
+          L.marker([point.lat, point.lon], { icon: rideIcon })
+            .addTo(markers)
+            .bindPopup(`<b>${point.area}</b><br>Lat: ${point.lat.toFixed(4)}<br>Lon: ${point.lon.toFixed(4)}`);
+        });
+
+        statusEl.textContent = `Found ${data.count} ride requests`;
+      } catch (error) {
+        console.error('Error:', error);
+        statusEl.textContent = 'Error loading data';
+      }
+    }
+
+    map.on('click', (e) => {
+      const radius = parseFloat(document.getElementById('radiusInput').value) || 1;
+      fetchNearbyPoints(e.latlng.lat, e.latlng.lng, radius);
+    });
+
+    // Show current location with a green marker
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        L.marker([latitude, longitude], { icon: currentLocationIcon })
+          .addTo(map)
+          .bindPopup("Your current location")
+          .openPopup();
+        map.setView([latitude, longitude], 14);
+      }, () => {
+        console.warn("Geolocation permission denied or unavailable.");
+      });
+    } else {
+      console.warn("Geolocation is not supported by this browser.");
+    }
+  </script>
+</body>
+</html>

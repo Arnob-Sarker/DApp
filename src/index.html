@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DApp - Privacy-Preserving Ride Aggregator</title>
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="./css/modern-styles.css?v=4.0" />
+</head>
+
+<body>
+  <!-- Loading Screen -->
+      <div id="loadingScreen" class="loading-screen">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <h3>Loading DApp...</h3>
+        <p>Connecting to blockchain network</p>
+      </div>
+    </div>
+
+  <!-- Main Application -->
+  <div id="mainApp" class="main-app" style="display: none;">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="javascript:void(0)" onclick="showPage('dashboard')">
+          <i class="fas fa-car-side"></i>
+          <span>DApp</span>
+        </a>
+        
+        <!-- Wallet Status -->
+        <div class="wallet-status">
+          <div id="walletIndicator" class="wallet-indicator">
+            <i class="fas fa-wallet"></i>
+            <span id="walletStatusText">Connect Wallet</span>
+          </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="showPage('dashboard')">
+                <i class="fas fa-home"></i> Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="showPage('register')">
+                <i class="fas fa-user-plus"></i> Register
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="showPage('sp-connect')">
+                <i class="fas fa-link"></i> Connect SPs
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="showPage('search-book')">
+                <i class="fas fa-search"></i> Search & Book
+              </a>
+            </li>
+            <li class="nav-item" id="logoutNavItem" style="display: none;">
+              <a class="nav-link" href="javascript:void(0)" onclick="ModernApp.logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="container-fluid">
+        <div id="pageContent">
+          <!-- Content will be loaded here -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <p>&copy; DApp. Privacy-Preserving Ride Aggregation Platform.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modals Container -->
+  <div id="modalsContainer"></div>
+  
+  <!-- Notifications Container -->
+  <div id="notificationContainer" class="notification-container"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@4.5.0/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/truffle-contract@4.0.31/dist/truffle-contract.min.js"></script>
+  
+  <!-- Core Modules -->
+  <script src="js/modern-core.js?v=4.0"></script>
+  <script src="js/modern-dashboard.js?v=4.0"></script>
+  <script src="js/modern-register.js?v=4.0"></script>
+  <script src="js/modern-sp-connect.js?v=4.0"></script>
+  <script src="js/modern-search-book.js?v=4.0"></script>
+  <script src="js/modern-app.js?v=4.0"></script>
+  
+  <script>
+    // Ensure showPage function is available globally
+    window.addEventListener('load', function() {
+      console.log('Page loaded, checking functions...');
+      
+      if (typeof showPage === 'function') {
+        console.log('✅ showPage function is available');
+      } else {
+        console.error('❌ showPage function is not available');
+      }
+      
+      if (typeof ModernCore !== 'undefined') {
+        console.log('✅ ModernCore is available');
+      } else {
+        console.error('❌ ModernCore is not available');
+      }
+      
+      if (typeof ModernApp !== 'undefined') {
+        console.log('✅ ModernApp is available');
+      } else {
+        console.error('❌ ModernApp is not available');
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,247 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    color: white;
+    border-radius: 15px 15px 0 0 !important;
+    border: none;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    border-radius: 0;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: transparent;
+    color: #ffc107;
+    border-bottom: 3px solid #ffc107;
+}
+
+.btn {
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-weight: 500;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    border: none;
+    color: white;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #e0a800 0%, #e8590c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+.ride-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    border-left: 4px solid #ffc107;
+}
+
+.ride-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.ride-card .driver-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.ride-card .driver-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+.ride-card .vehicle-info {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px 0;
+    border-left: 3px solid #ffc107;
+}
+
+.ride-card .price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffc107;
+}
+
+.ride-card .time {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.ride-card .status {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.ride-card .status.available {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.ride-card .status.booked {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.ride-card .status.in-progress {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.ride-card .status.completed {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 12px 15px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.modal-content {
+    border-radius: 15px;
+    border: none;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    color: white;
+    border-radius: 15px 15px 0 0;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.loading i {
+    font-size: 2rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.badge {
+    border-radius: 20px;
+    padding: 8px 12px;
+}
+
+.vehicle-icon {
+    font-size: 1.2rem;
+    margin-right: 5px;
+    color: #ffc107;
+}
+
+.location-info {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+    border-left: 3px solid #ffc107;
+}
+
+.location-info i {
+    color: #ffc107;
+    margin-right: 8px;
+}
+
+.price-badge {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.time-badge {
+    background-color: #6c757d;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+}
+
+.budget-badge {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+    .ride-card {
+        margin-bottom: 15px;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    .btn {
+        padding: 8px 20px;
+    }
+} 

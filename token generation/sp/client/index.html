@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth App</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div id="auth-forms">
+            <div id="signup-form" class="form-box">
+                <h2>Signup</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="signup-name">Name</label>
+                        <input type="text" id="signup-name" placeholder="Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" placeholder="Password" required>
+                    </div>
+                    <input type="hidden" id="signup-walletAddress" name="walletAddress" value="">
+                    <button type="submit">Signup</button>
+                </form>
+            </div>
+
+            <div id="login-form" class="form-box">
+                <h2>Login</h2>
+                <form id="loginForm" method="POST">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" placeholder="Password" required>
+                    </div>
+                    <!-- Hidden field for OAuth "next" param (if present) -->
+                    <input type="hidden" id="next" name="next" value="">
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="profile-section" class="form-box" style="display:none;">
+            <h2>Profile</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="profile-name">Name</label>
+                    <input type="text" id="profile-name" placeholder="Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="profile-email">Email</label>
+                    <input type="email" id="profile-email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="profile-description">Description</label>
+                    <textarea id="profile-description" placeholder="Description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="profile-password">New Password</label>
+                    <input type="password" id="profile-password" placeholder="New Password">
+                </div>
+                <button type="submit">Update Profile</button>
+            </form>
+            <button id="scheduleMeetingButton">Schedule Meeting</button>
+            <button id="logoutButton">Logout</button>
+        </div>
+
+        <!-- Schedule Meeting Modal -->
+        <div id="meeting-section" class="form-box" style="display:none;">
+            <h2>Schedule a Meeting</h2>
+            <form id="meetingForm">
+                <div class="form-group">
+                    <label for="meeting-date">Date</label>
+                    <input type="date" id="meeting-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="meeting-time">Time</label>
+                    <input type="time" id="meeting-time" required>
+                </div>
+                <div class="form-group">
+                    <label for="meeting-link">Meeting Link</label>
+                    <input type="text" id="meeting-link" placeholder="Meeting Link" required>
+                </div>
+                <div class="form-group">
+                    <label for="host-name">Host Name</label>
+                    <input type="text" id="host-name" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="host-email">Host Email</label>
+                    <input type="email" id="host-email" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="invitee-email">Invitee Email</label>
+                    <input type="email" id="invitee-email" placeholder="Invitee Email" required>
+                </div>
+                <button type="submit">Send Invitation</button>
+            </form>
+            <button id="cancelMeeting">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+    // Handle OAuth login redirection: grab "next" from URL and set hidden input/action
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        const nextValue = params.get('next');
+        const nextInput = document.getElementById('next');
+        const loginForm = document.getElementById('loginForm');
+        if (nextValue) {
+            nextInput.value = nextValue;
+            loginForm.action = '/oauth/spa-login';
+            loginForm.method = 'POST';
+        } else {
+            loginForm.action = '';
+            loginForm.method = 'POST';
+        }
+    })();
+    </script>
+    <script src="js/main.js"></script>
+</body>
+</html>

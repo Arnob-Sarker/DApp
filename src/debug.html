@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Debug - DApp</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1>DApp Debug Page</h1>
+    
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5>Test Buttons</h5>
+          </div>
+          <div class="card-body">
+            <button class="btn btn-primary mb-2" onclick="testBackend()">Test Backend</button>
+            <button class="btn btn-success mb-2" onclick="testWallet()">Test Wallet</button>
+            <button class="btn btn-info mb-2" onclick="testNavigation()">Test Navigation</button>
+            <button class="btn btn-warning mb-2" onclick="testPageLoad()">Test Page Load</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5>Console Output</h5>
+          </div>
+          <div class="card-body">
+            <div id="consoleOutput" style="height: 300px; overflow-y: auto; background: #f8f9fa; padding: 10px; font-family: monospace; font-size: 12px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mt-3">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5>Test Results</h5>
+          </div>
+          <div class="card-body">
+            <div id="testResults"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function log(message) {
+      const consoleOutput = document.getElementById('consoleOutput');
+      const timestamp = new Date().toLocaleTimeString();
+      consoleOutput.innerHTML += `[${timestamp}] ${message}<br>`;
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+      console.log(message);
+    }
+
+    function showResult(message, type = 'info') {
+      const testResults = document.getElementById('testResults');
+      const alertClass = type === 'error' ? 'alert-danger' : type === 'success' ? 'alert-success' : 'alert-info';
+      testResults.innerHTML += `<div class="alert ${alertClass} alert-sm">${message}</div>`;
+    }
+
+    async function testBackend() {
+      try {
+        log('Testing backend connection...');
+        const response = await fetch('http://localhost:3002/health');
+        const data = await response.json();
+        log(`Backend response: ${JSON.stringify(data)}`);
+        showResult('✅ Backend is working', 'success');
+      } catch (error) {
+        log(`Backend error: ${error.message}`);
+        showResult(`❌ Backend error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testWallet() {
+      try {
+        log('Testing wallet connection...');
+        if (typeof window.ethereum !== 'undefined') {
+          log('MetaMask is available');
+          showResult('✅ MetaMask is available', 'success');
+        } else {
+          log('MetaMask is not available');
+          showResult('❌ MetaMask is not available', 'error');
+        }
+      } catch (error) {
+        log(`Wallet test error: ${error.message}`);
+        showResult(`❌ Wallet test error: ${error.message}`, 'error');
+      }
+    }
+
+    function testNavigation() {
+      try {
+        log('Testing navigation...');
+        const navLinks = document.querySelectorAll('.nav-link');
+        log(`Found ${navLinks.length} navigation links`);
+        showResult(`✅ Found ${navLinks.length} navigation links`, 'success');
+      } catch (error) {
+        log(`Navigation test error: ${error.message}`);
+        showResult(`❌ Navigation test error: ${error.message}`, 'error');
+      }
+    }
+
+    function testPageLoad() {
+      try {
+        log('Testing page load...');
+        log('Current URL: ' + window.location.href);
+        log('Document ready state: ' + document.readyState);
+        showResult('✅ Page load test completed', 'success');
+      } catch (error) {
+        log(`Page load test error: ${error.message}`);
+        showResult(`❌ Page load test error: ${error.message}`, 'error');
+      }
+    }
+
+    // Auto-run tests on page load
+    window.addEventListener('load', function() {
+      log('Page loaded, running auto-tests...');
+      setTimeout(() => {
+        testBackend();
+        testWallet();
+        testNavigation();
+        testPageLoad();
+      }, 1000);
+    });
+  </script>
+</body>
+</html> 

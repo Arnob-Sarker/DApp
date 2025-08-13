@@ -1,0 +1,116 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #e3f2fd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.form-box {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-top: 0;
+    color: #007bff;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#logoutButton {
+    margin-top: 20px;
+    background-color: #dc3545;
+}
+
+#logoutButton:hover {
+    background-color: #c82333;
+}
+
+/* Modal Styling */
+#schedule-meeting-modal {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    width: 300px;
+    margin: 50px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#schedule-meeting-modal h2 {
+    margin-bottom: 20px;
+}
+
+#schedule-meeting-modal form div {
+    margin-bottom: 15px;
+}
+
+#schedule-meeting-modal form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#schedule-meeting-modal form input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+#schedule-meeting-modal form button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+#schedule-meeting-modal form button#cancel-meeting {
+    background-color: #6c757d;
+}

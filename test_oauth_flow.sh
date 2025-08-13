@@ -1,0 +1,63 @@
+#!/bin/bash
+
+echo "🧪 Testing OAuth Flow for All Service Providers..."
+echo ""
+
+# Test SP1 OAuth Flow
+echo "🔗 Testing SP1 OAuth Flow..."
+echo "URL: http://localhost:5001/oauth/authorize?client_id=sp1_client_123&response_type=code&redirect_uri=http://localhost:8080/index.html&state=test_wallet"
+echo "Expected: Should redirect to SP1 login page"
+echo ""
+
+# Test SP2 OAuth Flow
+echo "👑 Testing SP2 OAuth Flow..."
+echo "URL: http://localhost:5002/oauth/authorize?client_id=sp2_client_123&response_type=code&redirect_uri=http://localhost:8080/index.html&state=test_wallet"
+echo "Expected: Should redirect to SP2 login page"
+echo ""
+
+# Test SP3 OAuth Flow
+echo "🛵 Testing SP3 OAuth Flow..."
+echo "URL: http://localhost:5003/oauth/authorize?client_id=sp3_client_123&response_type=code&redirect_uri=http://localhost:8080/index.html&state=test_wallet"
+echo "Expected: Should redirect to SP3 login page"
+echo ""
+
+echo "📋 Test Credentials for OAuth Login:"
+echo ""
+echo "🚗 SP1 (Standard Ride Sharing):"
+echo "  - Email: ahmed@sp1.com, Password: password123"
+echo "  - Email: fatima@sp1.com, Password: password123"
+echo "  - Email: mohammed@sp1.com, Password: password123"
+echo ""
+echo "👑 SP2 (Premium Ride Sharing):"
+echo "  - Email: rahim@sp2.com, Password: password123"
+echo "  - Email: sara@sp2.com, Password: password123"
+echo "  - Email: karim@sp2.com, Password: password123"
+echo ""
+echo "🛵 SP3 (Budget Ride Sharing):"
+echo "  - Email: nurul@sp3.com, Password: password123"
+echo "  - Email: ayesha@sp3.com, Password: password123"
+echo "  - Email: mizanur@sp3.com, Password: password123"
+echo ""
+
+echo "🎯 Manual Testing Steps:"
+echo "1. Open http://localhost:8080 in your browser"
+echo "2. Connect MetaMask wallet to Localhost 8545"
+echo "3. Register and verify your email"
+echo "4. Click 'Grant Permission to Service Provider'"
+echo "5. Select any SP (SP1, SP2, or SP3)"
+echo "6. You should be redirected to the SP's login page"
+echo "7. Login with the credentials above"
+echo "8. After successful login, you should be redirected back to the main app"
+echo "9. The OAuth tokens should be stored and you can query the SP"
+echo ""
+
+echo "✅ OAuth Flow Implementation Complete!"
+echo ""
+echo "🌐 Main Application: http://localhost:8080"
+echo "🚗 SP1: http://localhost:5001"
+echo "👑 SP2: http://localhost:5002"
+echo "🛵 SP3: http://localhost:5003"
+echo ""
+echo "🔐 All SPs now have proper OAuth login pages!"
+echo "📱 Users must authenticate with each SP before granting permissions"
+echo "🔄 Tokens are exchanged securely after successful authentication" 

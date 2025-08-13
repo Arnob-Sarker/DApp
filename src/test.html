@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Test - DApp</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1>DApp Test Page</h1>
+    
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5>JavaScript Test</h5>
+          </div>
+          <div class="card-body">
+            <button class="btn btn-primary mb-2" onclick="testJS()">Test JavaScript</button>
+            <button class="btn btn-success mb-2" onclick="testLibraries()">Test Libraries</button>
+            <button class="btn btn-info mb-2" onclick="testModules()">Test Modules</button>
+            <button class="btn btn-warning mb-2" onclick="testNavigation()">Test Navigation</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h5>Console Output</h5>
+          </div>
+          <div class="card-body">
+            <div id="consoleOutput" style="height: 300px; overflow-y: auto; background: #f8f9fa; padding: 10px; font-family: monospace; font-size: 12px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mt-3">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5>Test Results</h5>
+          </div>
+          <div class="card-body">
+            <div id="testResults"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function log(message) {
+      const consoleOutput = document.getElementById('consoleOutput');
+      const timestamp = new Date().toLocaleTimeString();
+      consoleOutput.innerHTML += `[${timestamp}] ${message}<br>`;
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+      console.log(message);
+    }
+
+    function showResult(message, type = 'info') {
+      const testResults = document.getElementById('testResults');
+      const alertClass = type === 'error' ? 'alert-danger' : type === 'success' ? 'alert-success' : 'alert-info';
+      testResults.innerHTML += `<div class="alert ${alertClass} alert-sm">${message}</div>`;
+    }
+
+    function testJS() {
+      try {
+        log('Testing basic JavaScript...');
+        const test = 'Hello World';
+        log(`Test string: ${test}`);
+        showResult('✅ Basic JavaScript is working', 'success');
+      } catch (error) {
+        log(`JavaScript error: ${error.message}`);
+        showResult(`❌ JavaScript error: ${error.message}`, 'error');
+      }
+    }
+
+    function testLibraries() {
+      try {
+        log('Testing external libraries...');
+        
+        if (typeof Web3 !== 'undefined') {
+          log('✅ Web3 is loaded');
+          showResult('✅ Web3 is loaded', 'success');
+        } else {
+          log('❌ Web3 is not loaded');
+          showResult('❌ Web3 is not loaded', 'error');
+        }
+        
+        if (typeof TruffleContract !== 'undefined') {
+          log('✅ TruffleContract is loaded');
+          showResult('✅ TruffleContract is loaded', 'success');
+        } else {
+          log('❌ TruffleContract is not loaded');
+          showResult('❌ TruffleContract is not loaded', 'error');
+        }
+        
+        if (typeof bootstrap !== 'undefined') {
+          log('✅ Bootstrap is loaded');
+          showResult('✅ Bootstrap is loaded', 'success');
+        } else {
+          log('❌ Bootstrap is not loaded');
+          showResult('❌ Bootstrap is not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Library test error: ${error.message}`);
+        showResult(`❌ Library test error: ${error.message}`, 'error');
+      }
+    }
+
+    function testModules() {
+      try {
+        log('Testing custom modules...');
+        
+        if (typeof ModernCore !== 'undefined') {
+          log('✅ ModernCore is loaded');
+          showResult('✅ ModernCore is loaded', 'success');
+        } else {
+          log('❌ ModernCore is not loaded');
+          showResult('❌ ModernCore is not loaded', 'error');
+        }
+        
+        if (typeof ModernApp !== 'undefined') {
+          log('✅ ModernApp is loaded');
+          showResult('✅ ModernApp is loaded', 'success');
+        } else {
+          log('❌ ModernApp is not loaded');
+          showResult('❌ ModernApp is not loaded', 'error');
+        }
+        
+        if (typeof ModernDashboard !== 'undefined') {
+          log('✅ ModernDashboard is loaded');
+          showResult('✅ ModernDashboard is loaded', 'success');
+        } else {
+          log('❌ ModernDashboard is not loaded');
+          showResult('❌ ModernDashboard is not loaded', 'error');
+        }
+      } catch (error) {
+        log(`Module test error: ${error.message}`);
+        showResult(`❌ Module test error: ${error.message}`, 'error');
+      }
+    }
+
+    function testNavigation() {
+      try {
+        log('Testing navigation...');
+        
+        if (typeof showPage === 'function') {
+          log('✅ showPage function is available');
+          showResult('✅ showPage function is available', 'success');
+        } else {
+          log('❌ showPage function is not available');
+          showResult('❌ showPage function is not available', 'error');
+        }
+        
+        // Test if we can call showPage
+        try {
+          showPage('dashboard');
+          log('✅ showPage function call successful');
+          showResult('✅ showPage function call successful', 'success');
+        } catch (error) {
+          log(`❌ showPage function call failed: ${error.message}`);
+          showResult(`❌ showPage function call failed: ${error.message}`, 'error');
+        }
+      } catch (error) {
+        log(`Navigation test error: ${error.message}`);
+        showResult(`❌ Navigation test error: ${error.message}`, 'error');
+      }
+    }
+
+    // Auto-run tests on page load
+    window.addEventListener('load', function() {
+      log('Page loaded, running auto-tests...');
+      setTimeout(() => {
+        testJS();
+        testLibraries();
+        testModules();
+        testNavigation();
+      }, 1000);
+    });
+  </script>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@4.5.0/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/truffle-contract@4.0.31/dist/truffle-contract.min.js"></script>
+  
+  <!-- Core Modules -->
+  <script src="js/modern-core.js?v=4.0"></script>
+  <script src="js/modern-dashboard.js?v=4.0"></script>
+  <script src="js/modern-register.js?v=4.0"></script>
+  <script src="js/modern-sp-connect.js?v=4.0"></script>
+  <script src="js/modern-search-book.js?v=4.0"></script>
+  <script src="js/modern-app.js?v=4.0"></script>
+</body>
+</html> 

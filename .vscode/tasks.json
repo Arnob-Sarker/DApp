@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Install and Test All Services",
+			"command": "npm install && cd backend && npm install && cd ../sp1 && npm install && cd ../sp2 && npm install && cd ../sp3 && npm install && cd ../DP_p2/DP && npm install && cd ../'DP 2' && npm install && cd ../../../ && ./test_all_services.sh",
+			"group": "test",
+			"problemMatcher": []
+		}
+	]
+}

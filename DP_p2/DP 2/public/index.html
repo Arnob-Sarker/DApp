@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ride Requests Map - Carto Voyager</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  
+  <style>
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      font-family: Arial, sans-serif;
+    }
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+    #controls {
+      padding: 10px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #ddd;
+    }
+    #radiusInput {
+      width: 60px;
+      padding: 5px;
+      margin: 0 10px;
+    }
+    button {
+      padding: 5px 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .legend {
+      position: absolute;
+      bottom: 30px;
+      right: 10px;
+      padding: 10px;
+      background: white;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    .legend span {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 5px;
+      border-radius: 50%;
+    }
+    .status {
+      margin-top: 5px;
+      font-size: 0.9em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+<div id="controls">
+  <strong>Click on the map to select a location</strong><br />
+  Radius (km): <input type="number" id="radiusInput" value="1" min="0.1" step="0.1" />
+  <button id="refreshBtn">Refresh</button>
+  <div id="status" class="status">Ready</div>
+</div>
+
+<div id="map"></div>
+
+<div class="legend">
+  <span style="background:red;"></span> Real Location &nbsp;
+  <span style="background:blue;"></span> DP Location
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+<script>
+  // Initialize map centered on Dhaka
+  const map = L.map('map').setView([23.8103, 90.4125], 13);
+  
+  // Carto Voyager tiles with English labels
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+  }).addTo(map);
+
+  // Layer groups
+  const markersGroup = L.layerGroup().addTo(map);
+  let clickMarker = null;
+
+  // Custom icons
+  const realIcon = L.icon({
+    iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+  });
+
+  const dpIcon = L.icon({
+    iconUrl: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+  });
+
+  const clickIcon = L.icon({
+    iconUrl: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+  });
+
+  // Update status message
+  function updateStatus(message, isError = false) {
+    const statusEl = document.getElementById('status');
+    statusEl.textContent = message;
+    statusEl.style.color = isError ? 'red' : '#666';
+  }
+
+  // Fetch nearby points from server
+  async function fetchNearbyPoints(lat, lon, radius) {
+    updateStatus(`Loading points within ${radius}km...`);
+    markersGroup.clearLayers();
+    
+    // Add click marker
+    if (clickMarker) {
+      map.removeLayer(clickMarker);
+    }
+    clickMarker = L.marker([lat, lon], { icon: clickIcon })
+      .addTo(map)
+      .bindPopup(`Search Center<br>Lat: ${lat.toFixed(4)}<br>Lon: ${lon.toFixed(4)}<br>Radius: ${radius}km`)
+      .openPopup();
+
+    try {
+      const response = await fetch('/nearby', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ lat, lon, radius })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.points || data.points.length === 0) {
+        updateStatus(`No points found within ${radius}km radius`, true);
+        return;
+      }
+
+      // Add markers for each point
+      data.points.forEach(point => {
+        if (point.real && point.real.lat && point.real.lon) {
+          L.marker([point.real.lat, point.real.lon], { icon: realIcon })
+            .addTo(markersGroup)
+            .bindPopup(`📍 Real Location<br>Lat: ${point.real.lat.toFixed(6)}<br>Lon: ${point.real.lon.toFixed(6)}`);
+        }
+
+        if (point.noisy && point.noisy.lat && point.noisy.lon) {
+          L.marker([point.noisy.lat, point.noisy.lon], { icon: dpIcon })
+            .addTo(markersGroup)
+            .bindPopup(`🔒 DP Location<br>Lat: ${point.noisy.lat.toFixed(6)}<br>Lon: ${point.noisy.lon.toFixed(6)}`);
+        }
+      });
+
+      updateStatus(`Found ${data.count} points within ${radius}km radius`);
+      
+    } catch (error) {
+      console.error('API error:', error);
+      updateStatus(`Error: ${error.message}`, true);
+    }
+  }
+
+  // Event listeners
+  map.on('click', function(e) {
+    const radius = parseFloat(document.getElementById('radiusInput').value) || 1;
+    fetchNearbyPoints(e.latlng.lat, e.latlng.lng, radius);
+  });
+
+  document.getElementById('refreshBtn').addEventListener('click', function() {
+    if (clickMarker) {
+      const center = clickMarker.getLatLng();
+      const radius = parseFloat(document.getElementById('radiusInput').value) || 1;
+      fetchNearbyPoints(center.lat, center.lng, radius);
+    }
+  });
+
+  // Initial status
+  updateStatus('Click on the map to search for nearby points');
+</script>
+
+</body>
+</html>
