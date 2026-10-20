@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Set your MongoDB connection string first, e.g.
+#   export MONGODB_BASE_URI="mongodb+srv://<user>:<password>@<cluster>.mongodb.net/"
+: "${MONGODB_BASE_URI:?Set MONGODB_BASE_URI before running this script}"
+
 echo "🚀 Starting All Ride-Sharing Platform Services..."
 
 # Kill any existing processes on the ports we need
@@ -26,7 +30,7 @@ sleep 3
 echo "🔧 Starting Dapp Backend..."
 cd backend
 npm install > /dev/null 2>&1
-MONGODB_URI=mongodb+srv://arnob28sarker:a123s123@cluster0.6pawhmr.mongodb.net/ node server.js &
+MONGODB_URI="${MONGODB_BASE_URI}" node server.js &
 DAPP_BACKEND_PID=$!
 cd ..
 echo "✅ Dapp Backend started with PID: $DAPP_BACKEND_PID"
@@ -45,7 +49,7 @@ sleep 3
 echo "🚗 Starting SP1 (Standard Ride Sharing)..."
 cd sp1
 npm install > /dev/null 2>&1
-MONGODB_URI=mongodb+srv://arnob28sarker:a123s123@cluster0.6pawhmr.mongodb.net/sp1_ridesharing node server.js &
+MONGODB_URI="${MONGODB_BASE_URI}sp1_ridesharing" node server.js &
 SP1_PID=$!
 cd ..
 echo "✅ SP1 started with PID: $SP1_PID"
@@ -56,7 +60,7 @@ sleep 3
 echo "👑 Starting SP2 (Premium Ride Sharing)..."
 cd sp2
 npm install > /dev/null 2>&1
-MONGODB_URI=mongodb+srv://arnob28sarker:a123s123@cluster0.6pawhmr.mongodb.net/sp2_fooddelivery node server.js &
+MONGODB_URI="${MONGODB_BASE_URI}sp2_fooddelivery" node server.js &
 SP2_PID=$!
 cd ..
 echo "✅ SP2 started with PID: $SP2_PID"
@@ -67,7 +71,7 @@ sleep 3
 echo "🛵 Starting SP3 (Budget Ride Sharing)..."
 cd sp3
 npm install > /dev/null 2>&1
-MONGODB_URI=mongodb+srv://arnob28sarker:a123s123@cluster0.6pawhmr.mongodb.net/sp3_courierservice node server.js &
+MONGODB_URI="${MONGODB_BASE_URI}sp3_courierservice" node server.js &
 SP3_PID=$!
 cd ..
 echo "✅ SP3 started with PID: $SP3_PID"

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const uri = process.env.MONGO_URI || 'mongodb+srv://arnob28sarker:a123s123@cluster0.6pawhmr.mongodb.net/test';
+const uri = process.env.MONGO_URI || 'mongodb+srv://<user>:<password>@<cluster>.mongodb.net/test';
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(async () => {
